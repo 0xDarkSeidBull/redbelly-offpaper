@@ -1,0 +1,156 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Off Paper - Powered by Tokeniser | Show identity</title>
+<meta name="description" content="Visual identity, cover art, thumbnail template and opening sequence for Off Paper - Powered by Tokeniser.">
+<link rel="icon" href="src/brand/tokeniser-logo-on-mint.png">
+<link rel="stylesheet" href="src/fonts.css">
+<style>
+  :root { --slate:#343740; --mint:#A2FFC8; --lm:#DAFDE5; --lb:#C9DBF1; --blue:#323B70; --teal:#009C9C; }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body { margin: 0; background: var(--slate); color: var(--lm); font-family: Montserrat, sans-serif; line-height: 1.55; }
+  a { color: var(--mint); }
+  .wrap { max-width: 1180px; margin: 0 auto; padding: 0 24px; }
+  nav { position: sticky; top: 0; z-index: 5; background: rgba(52,55,64,.94); border-bottom: 1px solid rgba(201,219,241,.15); }
+  nav .wrap { display: flex; align-items: center; gap: 22px; height: 60px; }
+  nav .brand { font-weight: 800; color: var(--lm); text-decoration: none; display: flex; align-items: center; gap: 10px; white-space: nowrap; }
+  nav .brand span { color: var(--mint); font-weight: 500; }
+  nav .links { display: flex; gap: 18px; margin-left: auto; font-size: 14px; font-weight: 600; }
+  nav .links a { color: var(--lb); text-decoration: none; }
+  nav .links a:hover { color: var(--mint); }
+  .emb { display: grid; grid-template-columns: repeat(3, 7px); gap: 2px; }
+  .emb i { width: 7px; height: 7px; background: rgba(162,255,200,.7); }
+  .emb i.x { background: transparent; }
+  header.hero { padding: 64px 0 40px; display: grid; grid-template-columns: 1.1fr 1fr; gap: 48px; align-items: center; }
+  h1 { font-size: clamp(44px, 7vw, 84px); line-height: 1; margin: 0; font-weight: 800; }
+  h1 span { display: block; font-size: .36em; color: var(--mint); font-weight: 600; margin-top: 14px; }
+  .lead { font-size: 18px; color: var(--lb); max-width: 34em; margin: 22px 0 26px; font-weight: 500; }
+  .btns { display: flex; gap: 12px; flex-wrap: wrap; }
+  .btn { display: inline-block; padding: 13px 20px; border-radius: 8px; font-weight: 700; font-size: 15px; text-decoration: none; }
+  .btn.p { background: var(--mint); color: var(--slate); }
+  .btn.s { border: 2px solid var(--mint); color: var(--mint); }
+  img { max-width: 100%; height: auto; }
+  .hero img { width: 100%; border-radius: 10px; display: block; }
+  section { padding: 56px 0; border-top: 1px solid rgba(201,219,241,.15); }
+  h2 { font-size: 30px; margin: 0 0 8px; font-weight: 800; }
+  .kicker { font-size: 13px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: var(--mint); margin-bottom: 8px; }
+  .sub { color: var(--lb); max-width: 46em; margin: 0 0 28px; font-weight: 500; }
+  .videos { display: grid; grid-template-columns: 1fr 300px; gap: 24px; align-items: start; }
+  video { width: 100%; border-radius: 10px; display: block; background: var(--blue); }
+  .cap { font-size: 13px; color: var(--lb); margin-top: 8px; font-weight: 600; }
+  .grid3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+  .grid3 img { width: 100%; border-radius: 8px; display: block; }
+  .steps { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-top: 28px; counter-reset: s; }
+  .step { background: rgba(50,59,112,.55); border-radius: 10px; padding: 18px; font-size: 15px; color: var(--lb); }
+  .step b { display: block; color: var(--lm); margin-bottom: 4px; }
+  .step::before { counter-increment: s; content: counter(s); display: inline-grid; place-items: center; width: 28px; height: 28px; border-radius: 50%; background: var(--mint); color: var(--slate); font-weight: 800; font-size: 14px; margin-bottom: 10px; }
+  .id img { width: 100%; border-radius: 8px; display: block; }
+  .two { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+  table { width: 100%; border-collapse: collapse; font-size: 15px; }
+  td, th { text-align: left; padding: 12px 10px; border-bottom: 1px solid rgba(201,219,241,.15); vertical-align: top; }
+  th { color: var(--mint); font-size: 13px; text-transform: uppercase; letter-spacing: 1px; }
+  td:first-child { font-weight: 700; color: var(--lm); white-space: nowrap; }
+  td { color: var(--lb); }
+  .dl { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+  .dl a { display: block; padding: 16px; border-radius: 10px; border: 1px solid rgba(162,255,200,.35); text-decoration: none; color: var(--lm); font-weight: 700; }
+  .dl a small { display: block; color: var(--lb); font-weight: 500; margin-top: 4px; }
+  .dl a:hover { border-color: var(--mint); }
+  footer { padding: 34px 0 50px; color: var(--lb); font-size: 14px; border-top: 1px solid rgba(201,219,241,.15); display: flex; justify-content: space-between; gap: 20px; flex-wrap: wrap; }
+  footer img { height: 22px; }
+  @media (max-width: 900px) {
+    header.hero, .videos, .two { grid-template-columns: 1fr; }
+    .grid3, .dl { grid-template-columns: 1fr; }
+    .steps { grid-template-columns: 1fr 1fr; }
+    nav .links { display: none; }
+    .videos .v { max-width: 300px; }
+  }
+  @media (max-width: 520px) { .steps { grid-template-columns: 1fr; } .wrap { padding: 0 16px; } td:first-child { white-space: normal; } }
+</style>
+</head><body>
+<nav><div class="wrap">
+  <a class="brand" href="#"><span class="emb"><i></i><i></i><i class="x"></i><i></i><i></i><i></i><i></i><i></i><i></i></span>Off Paper <span>- Powered by Tokeniser</span></a>
+  <div class="links"><a href="#opening">Opening</a><a href="#thumbnails">Thumbnails</a><a href="#identity">Identity</a><a href="#files">Files</a></div>
+</div></nav>
+
+<div class="wrap">
+  <header class="hero">
+    <div>
+      <div class="kicker">Show identity</div>
+      <h1>Off Paper<span>- Powered by Tokeniser</span></h1>
+      <p class="lead">One look for the whole show, built only from the Tokeniser palette, Montserrat and the supplied Tokeniser logo. The idea: real world paperwork becoming tokens on chain, told in shapes, motion and sound.</p>
+      <div class="btns">
+        <a class="btn p" href="#opening">Watch the opening</a>
+        <a class="btn s" href="src/thumbnail.html">Make a thumbnail</a>
+      </div>
+    </div>
+    <img src="src/previews/cover.jpg" alt="Cover art for Off Paper - Powered by Tokeniser: a page outline whose ledger lines break into Mint tiles, above the show name and Tokeniser logo" width="960" height="960">
+  </header>
+
+  <section id="opening">
+    <div class="kicker">Part C</div>
+    <h2>Opening sequence</h2>
+    <p class="sub">15 seconds, landscape and vertical, each laid out for its frame. A page draws in, a scan turns its lines into tiles, the tiles leave the page and lock into a ledger, the grid folds into the emblem, and the name lands. Music and sound only, no words. It ends on solid Slate so an episode can cut straight in.</p>
+    <div class="videos">
+      <div><video src="deliverables/04-opening-sequence/off-paper-opening-16x9.mp4" controls playsinline preload="metadata" poster="src/previews/landscape_5.jpg"></video><div class="cap">16:9, 1920 x 1080, 60 fps, AAC stereo</div></div>
+      <div class="v"><video src="deliverables/04-opening-sequence/off-paper-opening-9x16.mp4" controls playsinline preload="metadata" poster="src/previews/vertical_2.jpg"></video><div class="cap">9:16, 1080 x 1920, 60 fps</div></div>
+    </div>
+  </section>
+
+  <section id="thumbnails">
+    <div class="kicker">Part B</div>
+    <h2>Thumbnail template</h2>
+    <p class="sub">Four slots: episode number, title, guest name and guest photo, plus an optional second guest. Layout, colours, type and logo are locked, so every episode matches. Titles stay three lines or fewer and at least 84 px, which keeps them readable in a phone feed.</p>
+    <div class="grid3">
+      <div><img src="src/previews/ep32.jpg" alt="EP 32 thumbnail, Notes from the research frontline, Vincent Gramoli" loading="lazy" width="960" height="540"><div class="cap">EP 32, stand-in from Redbelly Insights 32</div></div>
+      <div><img src="src/previews/ep31.jpg" alt="EP 31 thumbnail, What's new at Tokeniser, Matt Mills" loading="lazy" width="960" height="540"><div class="cap">EP 31, stand-in from Redbelly Insights 31</div></div>
+      <div><img src="src/previews/ep26.jpg" alt="EP 26 thumbnail, Redbelly and Tokeniser in conversation, two guests" loading="lazy" width="960" height="540"><div class="cap">EP 26, two guest layout</div></div>
+    </div>
+    <div class="steps">
+      <div class="step"><b>Open the maker</b>Any browser, free, nothing to install: <a href="src/thumbnail.html">thumbnail maker</a>.</div>
+      <div class="step"><b>Fill four slots</b>Episode number, title, guest name and organisation, then add the photo.</div>
+      <div class="step"><b>Check the phone preview</b>It shows the thumbnail at real phone size and warns if the title is too long.</div>
+      <div class="step"><b>Download</b>A 1920 x 1080 PNG. Prefer Figma? Import the <a href="deliverables/03-thumbnails/template/off-paper-thumbnail-template.svg">SVG template</a>, where each slot is a named layer.</div>
+    </div>
+  </section>
+
+  <section id="identity" class="id">
+    <div class="kicker">Part A</div>
+    <h2>Identity sheet</h2>
+    <p class="sub">Colours, type, show name, logo use, photo treatment, graphic devices and motion rules on two A3 pages. <a href="deliverables/01-identity-sheet/off-paper-identity-sheet.pdf">Open the PDF</a>.</p>
+    <img src="deliverables/01-identity-sheet/off-paper-identity-sheet.png" alt="Identity sheet, two pages: colour, type, show name, logo, photos, graphic devices, applications and motion" loading="lazy">
+  </section>
+
+  <section>
+    <div class="kicker">Rules</div>
+    <h2>What stays fixed</h2>
+    <table>
+      <tr><th>Rule</th><th>How it is kept</th></tr>
+      <tr><td>Show name</td><td>Always "Off Paper - Powered by Tokeniser". The text comes from one constant in <code>src/brand.js</code>, and <code>check.py</code> scans every source file for other spellings.</td></tr>
+      <tr><td>Colours</td><td>Only Slate, Mint, Light Mint, Light Blue, Blue and Teal. Orange is left out of show art on purpose. <code>check.py</code> rejects any other hex or rgb value.</td></tr>
+      <tr><td>Type</td><td>Montserrat only, from Google Fonts under the SIL Open Font License. The identity PDF embeds no other font.</td></tr>
+      <tr><td>Logo</td><td>The three supplied PNG files, checked by SHA-256, only scaled evenly. Never recoloured or redrawn.</td></tr>
+      <tr><td>Devices and photos</td><td>Graphic devices at 70 percent on solid colour and 60 percent on photos. Photos are grayscale with a 30 percent Slate overlay.</td></tr>
+      <tr><td>Opening</td><td>No voice and no words. The only text drawn is the show name, and the music is synthesised in code, so there is nothing to license.</td></tr>
+    </table>
+  </section>
+
+  <section id="files">
+    <div class="kicker">Downloads</div>
+    <h2>Files</h2>
+    <div class="dl">
+      <a href="deliverables/01-identity-sheet/off-paper-identity-sheet.pdf">Identity sheet<small>PDF, 2 pages A3, plus PNG</small></a>
+      <a href="deliverables/02-cover-art/off-paper-cover-3000x3000.png">Cover art<small>PNG 3000 x 3000, JPG 1400 x 1400</small></a>
+      <a href="deliverables/03-thumbnails/template/off-paper-thumbnail-template.svg">Thumbnail template<small>SVG for Figma, Penpot or Inkscape</small></a>
+      <a href="deliverables/04-opening-sequence/off-paper-opening-16x9.mp4">Opening 16:9<small>MP4, 1920 x 1080, 60 fps</small></a>
+      <a href="deliverables/04-opening-sequence/off-paper-opening-9x16.mp4">Opening 9:16<small>MP4, 1080 x 1920, 60 fps</small></a>
+      <a href="deliverables/06-licences/LICENCES.md">Licences<small>Font, logo, music, stand-in photos</small></a>
+    </div>
+  </section>
+
+  <footer>
+    <span>Off Paper - Powered by Tokeniser</span>
+    <img src="src/brand/tokeniser-logo-on-dark.png" alt="Tokeniser" style="height:auto;width:150px;margin:-14px 0">
+  </footer>
+</div>
+</body></html>

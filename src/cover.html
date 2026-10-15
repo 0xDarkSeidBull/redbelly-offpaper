@@ -1,0 +1,73 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><title>Off Paper - Powered by Tokeniser | Cover art</title>
+<link rel="stylesheet" href="fonts.css">
+<style>html,body{margin:0;background:#343740}canvas{display:block;width:min(100vw,100vh);height:auto}</style>
+</head><body>
+<canvas id="c" width="3000" height="3000"></canvas>
+<script src="brand.js"></script>
+<script>
+// Show cover art, 3000 x 3000. Built on a 3000 unit grid with a 240 unit margin.
+async function render() {
+  await loadFonts();
+  const logo = await loadImage(LOGO_BOX.dark.src);
+  const c = document.getElementById('c'), ctx = c.getContext('2d');
+  const S = 3000, M = 240;
+  ctx.fillStyle = P.slate; ctx.fillRect(0, 0, S, S);
+
+  // The sheet: cut corner outline with ledger lines. Each line breaks into tiles at its end,
+  // and the tiles carry on past the edge of the page: paper becoming tokens.
+  const sx = M, sy = M + 250, sw = 1100, sh = 1040, cut = 170;
+  ctx.save();
+  ctx.lineWidth = 14; ctx.strokeStyle = rgba(P.lightMint, DEVICE_ON_SOLID);
+  sheetPath(ctx, sx, sy, sw, sh, cut); ctx.stroke();
+  ctx.restore();
+  const n = 7, gap = 112, thick = 34, cell = 64, step = 92;
+  const lx = sx + 110, ly = sy + 230;
+  const lens = [300, 520, 440, 610, 380, 560, 470];
+  const outside = [6, 10, 8, 13, 5, 11, 9];
+  const right = S - M;
+  for (let i = 0; i < n; i++) {
+    const y = ly + i * gap;
+    ctx.fillStyle = rgba(P.lightMint, DEVICE_ON_SOLID);
+    roundRect(ctx, lx, y, lens[i], thick, thick / 2); ctx.fill();
+    // Tiles sit on one column grid, so every row lines up like a ledger.
+    const edge = sx + sw;
+    let k0 = Math.ceil((lx + lens[i] + 30 - lx) / step);
+    const cols = [];
+    let out = 0;
+    for (let k = k0; out < outside[i]; k++) {
+      const x = lx + k * step;
+      if (x + cell > right) break;
+      if (x > edge) out++;
+      if (x < edge + 24 && x + cell > edge - 24) continue;
+      cols.push(x);
+    }
+    cols.forEach((x, k) => {
+      const last = k >= cols.length - 3;
+      ctx.fillStyle = rgba(last ? P.mint : P.lightMint, DEVICE_ON_SOLID);
+      ctx.fillRect(x, y + thick / 2 - cell / 2, cell, cell);
+    });
+  }
+
+  // Rule between artwork and name.
+  ctx.fillStyle = rgba(P.mint, DEVICE_ON_SOLID);
+  ctx.fillRect(M, 1720, 260, 18);
+
+  // Name, set large for small podcast app tiles.
+  ctx.textBaseline = 'alphabetic';
+  ctx.fillStyle = P.lightMint; ctx.font = font(800, 470);
+  ctx.fillText('Off', M - 18, 2180);
+  ctx.fillText('Paper', M - 18, 2580);
+  ctx.fillStyle = P.mint; ctx.font = font(600, 128);
+  ctx.fillText(NAME_SUB, M, 2790);
+
+  // Emblem closes the composition, bottom right, on the name baseline.
+  drawEmblem(ctx, S - M - 380, 2580 - 380, 380, P.mint, DEVICE_ON_SOLID);
+
+  // Logo sits on the margin, top left, aligned with the name.
+  drawLogo(ctx, logo, 'dark', M, M - 20, 760);
+  document.documentElement.dataset.ready = '1';
+}
+render();
+</script>
+</body></html>

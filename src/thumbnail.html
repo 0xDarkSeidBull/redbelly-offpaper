@@ -1,0 +1,208 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Off Paper - Powered by Tokeniser | Thumbnail maker</title>
+<link rel="stylesheet" href="fonts.css">
+<style>
+  :root { --slate:#343740; --mint:#A2FFC8; --lm:#DAFDE5; --lb:#C9DBF1; --blue:#323B70; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--slate); color: var(--lm); font-family: Montserrat, sans-serif; }
+  .wrap { display: grid; grid-template-columns: 360px 1fr; gap: 28px; padding: 28px; max-width: 1500px; margin: 0 auto; }
+  h1 { font-size: 20px; font-weight: 800; margin: 0 0 4px; }
+  p.hint { font-size: 14px; line-height: 1.5; color: var(--lb); margin: 0 0 18px; }
+  label { display: block; font-size: 13px; font-weight: 600; margin: 14px 0 6px; color: var(--mint); }
+  input[type=text], input[type=number], textarea { width: 100%; padding: 10px 12px; border-radius: 8px; border: 2px solid var(--blue); background: var(--lm); color: var(--slate); font: 600 16px Montserrat, sans-serif; }
+  textarea { resize: vertical; min-height: 64px; }
+  input[type=file] { font: 500 14px Montserrat, sans-serif; color: var(--lm); max-width: 100%; }
+  .wrap > * { min-width: 0; }
+  input[type=range] { width: 100%; accent-color: var(--mint); }
+  .row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .note { font-size: 12px; color: var(--lb); margin-top: 4px; }
+  button { margin-top: 22px; width: 100%; padding: 14px; border: 0; border-radius: 8px; background: var(--mint); color: var(--slate); font: 800 16px Montserrat, sans-serif; cursor: pointer; }
+  button.alt { background: transparent; color: var(--mint); border: 2px solid var(--mint); margin-top: 10px; }
+  .stage { position: sticky; top: 28px; align-self: start; }
+  canvas { width: 100%; height: auto; display: block; border-radius: 6px; }
+  .phone { margin-top: 18px; display: flex; gap: 18px; align-items: flex-start; }
+  .phone canvas { width: 360px; border-radius: 4px; }
+  .phone span { font-size: 13px; color: var(--lb); line-height: 1.5; }
+  #warn { color: var(--mint); font-size: 13px; font-weight: 700; min-height: 18px; margin-top: 8px; }
+  body.render .wrap { display: block; padding: 0; } body.render form, body.render .phone { display: none; }
+  @media (max-width: 900px) { .wrap { grid-template-columns: 1fr; padding: 16px; } .stage { position: static; } .phone { flex-direction: column; } .phone canvas { width: 100%; max-width: 360px; } }
+</style>
+</head><body>
+<div class="wrap">
+<form id="f" autocomplete="off">
+  <h1>Thumbnail maker</h1>
+  <p class="hint" style="margin-bottom:6px;color:var(--mint);font-weight:600">Off Paper - Powered by Tokeniser</p>
+  <p class="hint">Fill in the four slots, check the phone preview, then download. Layout, colours, fonts and logo are locked so every episode matches.</p>
+  <label for="ep">Episode number</label>
+  <input id="ep" type="number" min="1" max="999" value="1">
+  <label for="title">Episode title (keep it under about 40 characters)</label>
+  <textarea id="title">Episode title goes here</textarea>
+  <label for="guest">Guest name (use "&amp;" for two guests)</label>
+  <input id="guest" type="text" value="Guest Name">
+  <label for="org">Guest organisation</label>
+  <input id="org" type="text" value="Organisation">
+  <label for="photo1">Guest photo</label>
+  <input id="photo1" type="file" accept="image/*">
+  <div class="row">
+    <div><label for="fx1">Move left / right</label><input id="fx1" type="range" min="0" max="1" step="0.01" value="0.5"></div>
+    <div><label for="fy1">Move up / down</label><input id="fy1" type="range" min="0" max="1" step="0.01" value="0.35"></div>
+  </div>
+  <label for="z1">Zoom</label><input id="z1" type="range" min="0.5" max="3" step="0.01" value="1">
+  <label for="photo2">Second guest photo (optional)</label>
+  <input id="photo2" type="file" accept="image/*">
+  <div class="row">
+    <div><label for="fx2">Move left / right</label><input id="fx2" type="range" min="0" max="1" step="0.01" value="0.5"></div>
+    <div><label for="fy2">Move up / down</label><input id="fy2" type="range" min="0" max="1" step="0.01" value="0.35"></div>
+  </div>
+  <label for="z2">Zoom</label><input id="z2" type="range" min="0.5" max="3" step="0.01" value="1">
+  <div class="note">Photos are turned grayscale and get the 30 percent Slate overlay automatically.</div>
+  <div id="warn"></div>
+  <button type="button" id="dl">Download PNG (1920 x 1080)</button>
+  <button type="button" class="alt" id="reset">Reset</button>
+</form>
+<div class="stage">
+  <canvas id="c" width="1920" height="1080"></canvas>
+  <div class="phone"><canvas id="mini" width="360" height="203"></canvas>
+    <span>Phone preview at real size: a thumbnail in a phone feed is about 360 pixels wide. If the title is hard to read here, shorten it.</span></div>
+</div>
+</div>
+<script src="brand.js"></script>
+<script>
+// Thumbnail template, 1920 x 1080. Slots: episode number, title, guest name, guest photo.
+const W = 1920, H = 1080, M = 96;
+const PANEL_X = 1100, PANEL_CUT = 150;
+const TITLE_MAX = 112, TITLE_MIN = 84, TITLE_W = 900, TITLE_LINES = 3;
+const state = { photos: [null, null] };
+let LOGO;
+
+function wrap(ctx, text, maxW) {
+  const words = text.trim().split(/\s+/); const lines = []; let cur = '';
+  for (const w of words) {
+    const t = cur ? cur + ' ' + w : w;
+    if (ctx.measureText(t).width <= maxW || !cur) cur = t; else { lines.push(cur); cur = w; }
+  }
+  if (cur) lines.push(cur);
+  return lines;
+}
+
+function fitTitle(ctx, text) {
+  for (let px = TITLE_MAX; px >= TITLE_MIN; px -= 2) {
+    ctx.font = font(800, px);
+    const lines = wrap(ctx, text, TITLE_W);
+    if (lines.length <= TITLE_LINES && lines.every(l => ctx.measureText(l).width <= TITLE_W)) return { px, lines, ok: true };
+  }
+  ctx.font = font(800, TITLE_MIN);
+  return { px: TITLE_MIN, lines: wrap(ctx, text, TITLE_W), ok: false };
+}
+
+function panelPath(ctx, x, y, w, h, cut) {
+  ctx.beginPath();
+  ctx.moveTo(x + cut, y); ctx.lineTo(x + w, y); ctx.lineTo(x + w, y + h); ctx.lineTo(x, y + h); ctx.lineTo(x, y + cut);
+  ctx.closePath();
+}
+
+function draw(ctx, d) {
+  ctx.fillStyle = P.slate; ctx.fillRect(0, 0, W, H);
+
+  // Guest photo panel, cut corner top left.
+  const pw = W - PANEL_X;
+  ctx.save();
+  panelPath(ctx, PANEL_X, 0, pw, H, PANEL_CUT); ctx.clip();
+  ctx.fillStyle = P.blue; ctx.fillRect(PANEL_X, 0, pw, H);
+  const photos = d.photos.filter(Boolean);
+  if (photos.length === 1) {
+    drawPhoto(ctx, photos[0].img, PANEL_X, 0, pw, H, photos[0].focus, photos[0].zoom);
+  } else if (photos.length === 2) {
+    const h2 = (H - 12) / 2;
+    drawPhoto(ctx, photos[0].img, PANEL_X, 0, pw, h2, photos[0].focus, photos[0].zoom);
+    drawPhoto(ctx, photos[1].img, PANEL_X, h2 + 12, pw, h2, photos[1].focus, photos[1].zoom);
+    ctx.fillStyle = P.slate; ctx.fillRect(PANEL_X, h2, pw, 12);
+  } else {
+    drawEmblem(ctx, PANEL_X + pw / 2 - 150, H / 2 - 150, 300, P.lightBlue, DEVICE_ON_SOLID);
+  }
+  ctx.restore();
+
+  // Tiles step out of the page and onto the photo: 70 percent on Slate, 60 percent on the photo.
+  const cell = 34, step = 50, ty = H - 120;
+  for (let r = 0; r < 2; r++) for (let k = 0; k < 6 - r * 2; k++) {
+    const x = PANEL_X - 3 * step + k * step + 8, y = ty - r * step;
+    const onPhoto = x >= PANEL_X;
+    ctx.fillStyle = rgba(onPhoto ? P.mint : P.lightMint, onPhoto ? DEVICE_ON_PHOTO : DEVICE_ON_SOLID);
+    ctx.fillRect(x, y, cell, cell);
+  }
+
+  // Show name, top left, with the emblem.
+  drawEmblem(ctx, M, 84, 56, P.mint, DEVICE_ON_SOLID);
+  drawName(ctx, M + 80, 128, 34, { layout: 'inline' });
+
+  // Episode number, title, guest.
+  const t = fitTitle(ctx, d.title);
+  const lh = t.px * 1.08;
+  const guestH = 50 + 16 + 36;
+  const block = 64 + 40 + t.lines.length * lh + 44 + guestH;
+  let y = Math.max(200, 200 + (680 - block) / 2);
+  ctx.textBaseline = 'alphabetic';
+  ctx.fillStyle = P.mint; ctx.font = font(800, 60);
+  const epText = 'EP ' + String(d.ep).padStart(2, '0');
+  ctx.fillText(epText, M, y + 56);
+  const epW = ctx.measureText(epText).width;
+  ctx.fillStyle = rgba(P.mint, DEVICE_ON_SOLID); ctx.fillRect(M + epW + 28, y + 30, 120, 10);
+  y += 64 + 40;
+  ctx.fillStyle = P.lightMint; ctx.font = font(800, t.px);
+  t.lines.forEach((l, i) => ctx.fillText(l, M - 4, y + t.px * 0.86 + i * lh));
+  y += t.lines.length * lh + 44;
+  ctx.fillStyle = P.lightMint; ctx.font = font(700, 50); ctx.fillText(d.guest, M, y + 42);
+  ctx.fillStyle = P.lightBlue; ctx.font = font(500, 36); ctx.fillText(d.org, M, y + 42 + 16 + 36);
+
+  // Logo, bottom left, on the margin.
+  drawLogo(ctx, LOGO, 'dark', M, H - M - 50, 230);
+  return t.ok;
+}
+
+function read() {
+  const g = id => document.getElementById(id);
+  const ph = [1, 2].map(i => state.photos[i - 1] && {
+    img: state.photos[i - 1], focus: [+g('fx' + i).value, +g('fy' + i).value], zoom: +g('z' + i).value });
+  return { ep: g('ep').value || '1', title: g('title').value || ' ', guest: g('guest').value, org: g('org').value, photos: ph };
+}
+
+function update() {
+  const c = document.getElementById('c'), ctx = c.getContext('2d');
+  const ok = draw(ctx, read());
+  document.getElementById('warn').textContent = ok ? '' : 'Title is too long for three lines. Please shorten it.';
+  const m = document.getElementById('mini').getContext('2d');
+  m.imageSmoothingQuality = 'high';
+  m.drawImage(c, 0, 0, 360, 203);
+}
+
+async function fileToImg(file) {
+  const url = URL.createObjectURL(file);
+  return loadImage(url);
+}
+
+async function init() {
+  await loadFonts();
+  LOGO = await loadImage(LOGO_BOX.dark.src);
+  const q = new URLSearchParams(location.search);
+  const g = id => document.getElementById(id);
+  for (const k of ['ep', 'title', 'guest', 'org', 'fx1', 'fy1', 'z1', 'fx2', 'fy2', 'z2']) if (q.has(k)) g(k).value = q.get(k);
+  for (const i of [1, 2]) if (q.has('photo' + i)) state.photos[i - 1] = await loadImage(q.get('photo' + i));
+  if (q.has('render')) document.body.classList.add('render');
+  g('f').addEventListener('input', update);
+  for (const i of [1, 2]) g('photo' + i).addEventListener('change', async e => {
+    if (e.target.files[0]) { state.photos[i - 1] = await fileToImg(e.target.files[0]); update(); }
+  });
+  g('dl').addEventListener('click', () => {
+    const a = document.createElement('a');
+    a.download = 'off-paper-ep' + String(g('ep').value).padStart(2, '0') + '-thumbnail.png';
+    a.href = document.getElementById('c').toDataURL('image/png'); a.click();
+  });
+  g('reset').addEventListener('click', () => location.href = location.pathname);
+  update();
+  document.documentElement.dataset.ready = '1';
+}
+init();
+</script>
+</body></html>

@@ -1,0 +1,246 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Off Paper - Powered by Tokeniser | Opening sequence</title>
+<link rel="stylesheet" href="fonts.css">
+<style>
+  html, body { margin: 0; background: #343740; }
+  canvas { display: block; max-width: 100vw; max-height: 100vh; margin: 0 auto; }
+</style>
+</head><body>
+<canvas id="c"></canvas>
+<script src="brand.js"></script>
+<script>
+// Opening sequence. One deterministic function, frame(t), draws the picture at time t,
+// so the same code renders landscape (1920 x 1080) and vertical (1080 x 1920) layouts,
+// and the sound track is timed from the same TIMELINE.
+const q = new URLSearchParams(location.search);
+const FORMAT = q.get('format') === 'vertical' ? 'vertical' : 'landscape';
+const W = FORMAT === 'vertical' ? 1080 : 1920, H = FORMAT === 'vertical' ? 1920 : 1080;
+const DURATION = 15;
+const U = Math.min(W, H) / 1080;
+
+const TIMELINE = {
+  sheetDraw: [0.3, 1.5], linesDraw: [0.9, 2.5], scan: [2.7, 4.1],
+  fly: [4.1, 7.0], sheetFade: [4.8, 6.2], links: [7.0, 8.0], pulse: [7.6, 8.8],
+  collapse: [8.9, 10.0], name: [10.0, 10.8], sub: [10.5, 11.2], logo: [10.9, 11.7],
+  fadeOut: [14.0, 14.7], end: DURATION,
+};
+
+// Layout per format, laid out for the frame rather than cropped.
+const L = FORMAT === 'landscape'
+  ? { sheet: [W * 0.27, H * 0.5], grid: [W * 0.72, H * 0.5], lock: [W / 2, H / 2], nameSize: 168, subSize: 50, logoW: 360, emblem: 150 }
+  : { sheet: [W * 0.5, H * 0.28], grid: [W * 0.5, H * 0.71], lock: [W / 2, H / 2], nameSize: 168, subSize: 50, logoW: 380, emblem: 170 };
+
+// The page: 8 ledger lines. Counts are tiles per line, 64 in total for an 8 x 8 ledger grid.
+const SHEET = { w: 450 * U, h: 590 * U, cut: 88 * U };
+const COUNTS = [6, 9, 8, 9, 7, 9, 8, 8];
+const LINE = { top: 120 * U, pad: 62 * U, gap: 52 * U, thick: 12 * U, cell: 22 * U, step: 34 * U };
+const GRID = { n: 8, cell: 40 * U, step: 54 * U };
+
+const tiles = [];
+(function build() {
+  const sx = L.sheet[0] - SHEET.w / 2, sy = L.sheet[1] - SHEET.h / 2;
+  let idx = 0;
+  const gw = GRID.n * GRID.step - (GRID.step - GRID.cell);
+  const gx = L.grid[0] - gw / 2, gy = L.grid[1] - gw / 2;
+  // Emblem placement at the end of the collapse.
+  const ex = L.lock[0] - L.emblem / 2, ey = L.lock[1] - (FORMAT === 'landscape' ? 330 : 380) * U;
+  const eg = L.emblem * 0.1, es = (L.emblem - 2 * eg) / 3;
+  COUNTS.forEach((n, i) => {
+    for (let k = 0; k < n; k++) {
+      const col = idx % GRID.n;
+      // Vertical: fill the grid from the bottom up, so no tile crosses one that has landed.
+      const row = FORMAT === 'vertical' ? GRID.n - 1 - Math.floor(idx / GRID.n) : Math.floor(idx / GRID.n);
+      const ecx = Math.min(2, Math.floor(col / (GRID.n / 3))), ecy = Math.min(2, Math.floor(row / (GRID.n / 3)));
+      const cut = ecx === 2 && ecy === 0;
+      tiles.push({
+        line: i, k, idx, col, row,
+        src: [sx + LINE.pad + k * LINE.step, sy + LINE.top + i * LINE.gap + LINE.thick / 2 - LINE.cell / 2],
+        dst: [gx + col * GRID.step, gy + row * GRID.step],
+        emb: [ex + ecx * (es + eg), ey + ecy * (es + eg)], es, cut,
+      });
+      idx++;
+    }
+  });
+})();
+
+const LINE_SCAN_AT = COUNTS.map((_, i) => lerp(TIMELINE.scan[0], TIMELINE.scan[1], (i + 0.5) / COUNTS.length));
+const FLY_DUR = 1.25;
+const flyStart = t => TIMELINE.fly[0] + t.idx * ((TIMELINE.fly[1] - TIMELINE.fly[0] - FLY_DUR) / 63);
+const ROW_LOCK_AT = Array.from({ length: GRID.n }, (_, r) => flyStart(tiles[r * GRID.n + GRID.n - 1]) + FLY_DUR);
+const pulseAt = t => lerp(TIMELINE.pulse[0], TIMELINE.pulse[1] - 0.3, (t.col + t.row) / 14);
+
+const c = document.getElementById('c'); c.width = W; c.height = H;
+const ctx = c.getContext('2d');
+const layer = document.createElement('canvas'); layer.width = W; layer.height = H;
+const lx = layer.getContext('2d');
+let LOGO;
+
+function background(t) {
+  ctx.fillStyle = P.slate; ctx.fillRect(0, 0, W, H);
+  // Light: a slow Blue glow drifting across the Slate, the only texture in the frame.
+  const gx = W * (0.5 + 0.12 * Math.sin(t * 0.35)), gy = H * (0.45 + 0.06 * Math.cos(t * 0.3));
+  const g = ctx.createRadialGradient(gx, gy, 0, gx, gy, Math.max(W, H) * 0.75);
+  g.addColorStop(0, rgba(P.blue, 0.55)); g.addColorStop(1, rgba(P.blue, 0));
+  ctx.fillStyle = g; ctx.fillRect(0, 0, W, H);
+}
+
+function camera(t) {
+  const s = 1 + 0.04 * ease.inOut(seg(t, 0, TIMELINE.collapse[0]));
+  return s;
+}
+
+function frame(t) {
+  background(t);
+  const s = camera(t);
+  lx.setTransform(1, 0, 0, 1, 0, 0);
+  lx.clearRect(0, 0, W, H);
+  lx.setTransform(s, 0, 0, s, W / 2 * (1 - s), H / 2 * (1 - s));
+
+  const sx = L.sheet[0] - SHEET.w / 2, sy = L.sheet[1] - SHEET.h / 2;
+  const sheetOn = 1 - seg(t, ...TIMELINE.sheetFade);
+
+  // 1. The sheet draws itself.
+  const pd = ease.inOut(seg(t, ...TIMELINE.sheetDraw));
+  if (pd > 0 && sheetOn > 0) {
+    lx.save();
+    lx.globalAlpha = sheetOn;
+    lx.lineWidth = 4 * U; lx.strokeStyle = P.lightMint; lx.lineJoin = 'miter';
+    const per = 2 * (SHEET.w + SHEET.h);
+    lx.setLineDash([per * pd, per]);
+    sheetPath(lx, sx, sy, SHEET.w, SHEET.h, SHEET.cut); lx.stroke();
+    lx.restore();
+  }
+
+  // 2. Ledger lines write in, then 3. the scan quantises each line into tiles.
+  COUNTS.forEach((n, i) => {
+    const full = n * LINE.step - (LINE.step - LINE.cell);
+    const grow = ease.out(seg(t, TIMELINE.linesDraw[0] + i * 0.13, TIMELINE.linesDraw[0] + i * 0.13 + 0.7));
+    const q = ease.inOut(seg(t, LINE_SCAN_AT[i] - 0.05, LINE_SCAN_AT[i] + 0.4));
+    if (grow <= 0) return;
+    const y = sy + LINE.top + i * LINE.gap;
+    if (q <= 0) {
+      lx.fillStyle = P.lightMint;
+      roundRect(lx, sx + LINE.pad, y, full * grow, LINE.thick, LINE.thick / 2); lx.fill();
+      return;
+    }
+    // Quantised: tiles that have not left yet stay on the page.
+    for (const tl of tiles) {
+      if (tl.line !== i || t >= flyStart(tl)) continue;
+      const h = lerp(LINE.thick, LINE.cell, q);
+      const wv = lerp(LINE.step + 0.5, LINE.cell, q);
+      lx.fillStyle = P.lightMint;
+      lx.fillRect(tl.src[0], y + LINE.thick / 2 - h / 2, Math.min(wv, full - tl.k * LINE.step), h);
+    }
+  });
+
+  // 4. Tiles leave the page and lock into the ledger grid, row by row.
+  for (const tl of tiles) {
+    const f0 = flyStart(tl);
+    if (t < f0) continue;
+    const p = ease.inOut(seg(t, f0, f0 + FLY_DUR));
+    const cp = seg(t, ...TIMELINE.collapse);
+    let x, y, size;
+    if (cp <= 0) {
+      const ax = tl.src[0], ay = tl.src[1], bx = tl.dst[0], by = tl.dst[1];
+      // One gentle shared arc, so the tiles travel as an orderly stream.
+      const lift = -40 * U * Math.sin(Math.PI * p);
+      x = lerp(ax, bx, p) + (FORMAT === 'landscape' ? 0 : lift);
+      y = lerp(ay, by, p) + (FORMAT === 'landscape' ? lift : 0);
+      size = lerp(LINE.cell, GRID.cell, p);
+    } else {
+      const e = ease.inOut(cp);
+      x = lerp(tl.dst[0], tl.emb[0], e); y = lerp(tl.dst[1], tl.emb[1], e);
+      size = lerp(GRID.cell, tl.es, e);
+      if (tl.cut) size *= 1 - ease.out(clamp(cp * 1.8)); // the corner tiles fall away: the cut corner of the page
+    }
+    if (size <= 0.2) continue;
+    const verified = t >= pulseAt(tl) + 0.15;
+    lx.fillStyle = verified ? P.mint : P.lightMint;
+    lx.fillRect(x, y, size, size);
+  }
+
+  // 5. Links between neighbouring tiles: the grid becomes a connected record.
+  const lp = seg(t, ...TIMELINE.links), lend = 1 - seg(t, TIMELINE.collapse[0], TIMELINE.collapse[0] + 0.25);
+  if (lp > 0 && lend > 0) {
+    lx.save(); lx.globalAlpha = lend; lx.strokeStyle = P.mint; lx.lineWidth = 2 * U;
+    const half = GRID.cell / 2;
+    for (const tl of tiles) {
+      const d = (tl.col + tl.row) / 14;
+      const a = ease.out(clamp((lp - d * 0.6) / 0.4));
+      if (a <= 0) continue;
+      const cx = tl.dst[0] + half, cy = tl.dst[1] + half;
+      lx.beginPath();
+      if (tl.col < GRID.n - 1) { lx.moveTo(cx + half, cy); lx.lineTo(cx + half + (GRID.step - GRID.cell) * a, cy); }
+      if (tl.row < GRID.n - 1) { lx.moveTo(cx, cy + half); lx.lineTo(cx, cy + half + (GRID.step - GRID.cell) * a); }
+      lx.stroke();
+    }
+    lx.restore();
+  }
+
+  // Graphic devices composite at 70 percent on the solid background, as the brand rule asks.
+  ctx.save(); ctx.globalAlpha = DEVICE_ON_SOLID; ctx.drawImage(layer, 0, 0); ctx.restore();
+
+  // Scan light, a soft Mint band passing down the page.
+  const sp = seg(t, TIMELINE.scan[0] - 0.2, TIMELINE.scan[1] + 0.3);
+  if (sp > 0 && sp < 1) {
+    const by = sy + lerp(-40 * U, SHEET.h + 40 * U, ease.inOut(sp));
+    ctx.save(); ctx.setTransform(s, 0, 0, s, W / 2 * (1 - s), H / 2 * (1 - s));
+    const g = ctx.createLinearGradient(0, by - 70 * U, 0, by + 70 * U);
+    g.addColorStop(0, rgba(P.mint, 0)); g.addColorStop(0.5, rgba(P.mint, 0.28)); g.addColorStop(1, rgba(P.mint, 0));
+    ctx.fillStyle = g; ctx.fillRect(sx - 30 * U, by - 70 * U, SHEET.w + 60 * U, 140 * U);
+    ctx.restore();
+  }
+
+  // 6. Show name and logo, the only text in the opening.
+  const [cx, cy] = L.lock;
+  const reveal = (span, y0, h, draw) => {
+    const p = ease.outQuint(seg(t, ...span));
+    if (p <= 0) return;
+    ctx.save();
+    ctx.beginPath(); ctx.rect(0, y0 - h, W, h * 1.45); ctx.clip();
+    ctx.translate(0, (1 - p) * h * 0.6); ctx.globalAlpha = p;
+    draw(); ctx.restore();
+  };
+  const nameY = cy + (FORMAT === 'landscape' ? 10 : 20) * U;
+  reveal(TIMELINE.name, nameY, L.nameSize * U, () => {
+    ctx.textAlign = 'center'; ctx.fillStyle = P.lightMint; ctx.font = font(800, L.nameSize * U);
+    ctx.fillText(NAME_MAIN, cx, nameY);
+  });
+  const subY = nameY + L.subSize * U * 2.0;
+  reveal(TIMELINE.sub, subY, L.subSize * U * 1.4, () => {
+    ctx.textAlign = 'center'; ctx.fillStyle = P.mint; ctx.font = font(600, L.subSize * U);
+    ctx.fillText(NAME_SUB, cx, subY);
+  });
+  const lp2 = ease.out(seg(t, ...TIMELINE.logo));
+  if (lp2 > 0) {
+    const lw = L.logoW * U;
+    const [, , cw, ch] = LOGO_BOX.dark.crop;
+    drawLogo(ctx, LOGO, 'dark', cx - lw / 2, subY + 64 * U + (1 - lp2) * 12 * U, lw, lp2);
+  }
+
+  // 7. Fade to solid Slate so the episode can cut straight in.
+  const fo = seg(t, ...TIMELINE.fadeOut);
+  if (fo > 0) { ctx.fillStyle = rgba(P.slate, ease.inOut(fo)); ctx.fillRect(0, 0, W, H); }
+}
+
+window.TIMELINE = TIMELINE;
+window.EVENTS = () => ({
+  lineScan: LINE_SCAN_AT, rowLock: ROW_LOCK_AT,
+  pulse: TIMELINE.pulse, collapseEnd: TIMELINE.collapse[1], timeline: TIMELINE, duration: DURATION,
+});
+window.frame = frame;
+
+(async () => {
+  await loadFonts();
+  LOGO = await loadImage(LOGO_BOX.dark.src);
+  if (q.has('t')) { frame(+q.get('t')); document.documentElement.dataset.ready = '1'; return; }
+  document.documentElement.dataset.ready = '1';
+  if (q.has('render')) return;
+  const t0 = performance.now();
+  const loop = now => { frame(((now - t0) / 1000) % (DURATION + 1)); requestAnimationFrame(loop); };
+  requestAnimationFrame(loop);
+})();
+</script>
+</body></html>

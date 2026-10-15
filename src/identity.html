@@ -1,0 +1,194 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<title>Off Paper - Powered by Tokeniser | Identity sheet</title>
+<link rel="stylesheet" href="fonts.css">
+<style>
+  @page { size: 420mm 297mm; margin: 0; }
+  :root { --slate:#343740; --mint:#A2FFC8; --lm:#DAFDE5; --lb:#C9DBF1; --blue:#323B70; --teal:#009C9C; --orange:#FF9A81; }
+  * { box-sizing: border-box; margin: 0; }
+  html, body { background: var(--slate); }
+  body { font-family: Montserrat, sans-serif; color: var(--lm); -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  .page { width: 420mm; height: 297mm; padding: 16mm 18mm; position: relative; overflow: hidden; page-break-after: always; display: grid; gap: 9mm; }
+  .p1 { grid-template-columns: 1.05fr 1fr; grid-template-rows: auto 1fr; }
+  .p2 { grid-template-columns: 1fr 1fr; grid-template-rows: auto auto auto auto; align-content: start; }
+  header { grid-column: 1 / -1; display: flex; justify-content: space-between; align-items: flex-end; border-bottom: 1.4mm solid rgba(162,255,200,.7); padding-bottom: 5mm; }
+  header h1 { font-weight: 800; font-size: 15mm; line-height: 1; }
+  header h1 span { display: block; font-weight: 600; font-size: 5.6mm; color: var(--mint); margin-top: 3mm; }
+  header .tag { font-size: 3.6mm; font-weight: 600; color: var(--lb); text-align: right; line-height: 1.5; }
+  h2 { font-size: 3.4mm; font-weight: 700; letter-spacing: .5mm; color: var(--mint); text-transform: uppercase; margin-bottom: 3.5mm; }
+  p, li { font-size: 3.5mm; line-height: 1.5; font-weight: 500; color: var(--lb); }
+  b { color: var(--lm); font-weight: 700; }
+  ul { padding-left: 4.5mm; }
+  section { min-height: 0; }
+  .card { background: rgba(50,59,112,.55); border-radius: 2.5mm; padding: 6mm; }
+  .stack { display: grid; gap: 7mm; align-content: start; }
+  .swatches { display: grid; grid-template-columns: repeat(3, 1fr); gap: 3mm; margin-bottom: 3mm; }
+  .swatches.sec { grid-template-columns: repeat(4, 1fr); }
+  .sw { border-radius: 2mm; padding: 3.5mm; height: 30mm; display: flex; flex-direction: column; justify-content: flex-end; font-size: 3.2mm; font-weight: 700; border: .4mm solid rgba(201,219,241,.35); }
+  .sw small { display: block; font-weight: 500; font-size: 2.8mm; margin-top: .8mm; }
+  .sec .sw { height: 22mm; }
+  .bar { display: flex; height: 6mm; border-radius: 1.5mm; overflow: hidden; margin: 2mm 0 2mm; }
+  .type .row { display: flex; align-items: baseline; gap: 6mm; border-top: .3mm solid rgba(201,219,241,.25); padding: 2.6mm 0; }
+  .type .row .lab { width: 34mm; flex: none; font-size: 3mm; font-weight: 600; color: var(--mint); }
+  .names { display: grid; grid-template-columns: 1fr 1fr; gap: 4mm; }
+  .names img, .logos img { width: 100%; display: block; border-radius: 2mm; }
+  .logos { display: grid; grid-template-columns: 1fr 1fr 0.6fr; gap: 4mm; align-items: stretch; }
+  .logos .lg { border-radius: 2mm; display: flex; align-items: center; justify-content: center; padding: 6mm; }
+  .logos .lg img { width: 100%; border-radius: 0; }
+  .lgcap { font-size: 2.8mm; font-weight: 600; margin-top: 1.5mm; color: var(--lb); }
+  .rules { display: grid; grid-template-columns: 1fr 1fr; gap: 4mm; }
+  .do { color: var(--mint); } .dont { color: var(--orange); }
+  .devices { display: grid; grid-template-columns: repeat(4, 1fr); gap: 4mm; }
+  .devices canvas { width: 100%; height: 36mm; display: block; border-radius: 2mm; margin-bottom: 2mm; }
+  .apps { display: grid; grid-template-columns: 66mm 1fr 1fr 1fr; gap: 4mm; align-items: start; }
+  .apps img { width: 100%; display: block; border-radius: 2mm; }
+  .cap { font-size: 2.8mm; font-weight: 600; color: var(--lb); margin-top: 1.5mm; }
+  .strip { display: grid; grid-template-columns: repeat(6, 1fr) 0.4fr 0.4fr 0.4fr; gap: 2.5mm; align-items: end; }
+  .strip img { width: 100%; display: block; border-radius: 1.2mm; }
+  .strip .cap { font-size: 2.5mm; }
+  footer { position: absolute; left: 18mm; right: 18mm; bottom: 7mm; display: flex; justify-content: space-between; font-size: 2.8mm; font-weight: 600; color: var(--lb); }
+</style>
+</head><body>
+
+<div class="page p1">
+  <header>
+    <h1>Off Paper<span>- Powered by Tokeniser</span></h1>
+    <div class="tag">Identity sheet<br>Cover art, thumbnails, opening sequence</div>
+  </header>
+
+  <div class="stack">
+    <section>
+      <h2>Colour</h2>
+      <div class="swatches">
+        <div class="sw" style="background:var(--slate);color:var(--lm)">Slate<small>#343740 · base, every background</small></div>
+        <div class="sw" style="background:var(--mint);color:var(--slate)">Mint<small>#A2FFC8 · accent, sub line, tiles</small></div>
+        <div class="sw" style="background:var(--lm);color:var(--slate)">Light Mint<small>#DAFDE5 · show name, titles</small></div>
+      </div>
+      <div class="swatches sec">
+        <div class="sw" style="background:var(--lb);color:var(--slate)">Light Blue<small>#C9DBF1 · secondary text, photo backdrop</small></div>
+        <div class="sw" style="background:var(--blue);color:var(--lm)">Blue<small>#323B70 · light in motion, panels</small></div>
+        <div class="sw" style="background:var(--teal);color:var(--slate)">Teal<small>#009C9C · accent on light grounds</small></div>
+        <div class="sw" style="background:var(--orange);color:var(--slate)">Orange<small>#FF9A81 · not used in show art</small></div>
+      </div>
+      <div class="bar"><div style="flex:60;background:var(--slate);border:.4mm solid rgba(201,219,241,.35)"></div><div style="flex:22;background:var(--lm)"></div><div style="flex:10;background:var(--mint)"></div><div style="flex:5;background:var(--blue)"></div><div style="flex:3;background:var(--lb)"></div></div>
+      <p>Roughly 60 Slate, 22 Light Mint, 10 Mint, the rest Blue and Light Blue. Only the Tokeniser palette is used. Orange stays out of show art so nothing reads as an alert or a price move.</p>
+    </section>
+
+    <section class="type">
+      <h2>Type: Montserrat only</h2>
+      <div class="row"><span class="lab">ExtraBold 800</span><span style="font:800 9mm Montserrat;color:var(--lm)">Episode titles</span><span style="font-size:3mm;color:var(--lb)">show name, episode titles, EP number</span></div>
+      <div class="row"><span class="lab">SemiBold 600</span><span style="font:600 6mm Montserrat;color:var(--mint)">- Powered by Tokeniser</span><span style="font-size:3mm;color:var(--lb)">sub line, labels</span></div>
+      <div class="row"><span class="lab">Bold 700</span><span style="font:700 5mm Montserrat;color:var(--lm)">Guest Name</span><span style="font-size:3mm;color:var(--lb)">guest name</span></div>
+      <div class="row"><span class="lab">Medium 500</span><span style="font:500 4.6mm Montserrat;color:var(--lb)">Organisation</span><span style="font-size:3mm;color:var(--lb)">organisation, body copy</span></div>
+      <p style="margin-top:2mm">Sentence case. Thumbnail titles are 84 to 112 px on a 1920 px canvas, at most three lines, so they stay at least 16 px tall on a 360 px wide phone thumbnail.</p>
+    </section>
+
+    <section>
+      <h2>Photos</h2>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1.3fr;gap:4mm;align-items:center">
+        <div><canvas id="ph1" width="500" height="300" style="width:100%;border-radius:2mm;display:block"></canvas><div class="lgcap">Supplied photo</div></div>
+        <div><canvas id="ph2" width="500" height="300" style="width:100%;border-radius:2mm;display:block"></canvas><div class="lgcap">Grayscale, 30 percent Slate overlay, tiles at 60 percent</div></div>
+        <p>Guest photos are always grayscale with a 30 percent Slate overlay, so any headshot sits in the palette. Cut out photos sit on Light Blue. The thumbnail maker applies this automatically.</p>
+      </div>
+    </section>
+
+  </div>
+
+  <div class="stack">
+    <section>
+      <h2>Show name</h2>
+      <div class="names">
+        <div class="card" style="padding:5mm"><canvas id="nameStack" width="900" height="420" style="width:100%"></canvas><div class="lgcap">Stacked: cover, opening, square formats</div></div>
+        <div class="card" style="padding:5mm;display:flex;flex-direction:column;justify-content:center"><canvas id="nameInline" width="900" height="120" style="width:100%"></canvas><div class="lgcap">Inline: thumbnail header, small spaces</div></div>
+      </div>
+      <p style="margin-top:3mm">Always exactly <b>Off Paper - Powered by Tokeniser</b>: a plain hyphen with a space each side. Never "Off-Paper", "OffPaper", all capitals or a different dash. The first line carries the weight; the second line is always present.</p>
+    </section>
+
+    <section>
+      <h2>Tokeniser logo</h2>
+      <div class="logos">
+        <div><div class="lg" style="background:var(--slate);border:.4mm solid rgba(201,219,241,.35)"><img src="brand/tokeniser-logo-on-dark.png" style="margin:-9% 0"></div><div class="lgcap">On dark: Slate, Blue, photos</div></div>
+        <div><div class="lg" style="background:var(--lm)"><img src="brand/tokeniser-logo-slate-green-icon.png"></div><div class="lgcap">On light: Light Mint, Light Blue</div></div>
+        <div><div class="lg" style="padding:0;overflow:hidden"><img src="brand/tokeniser-logo-on-mint.png"></div><div class="lgcap">Square avatar</div></div>
+      </div>
+      <div class="rules" style="margin-top:3mm">
+        <ul><li class="do">Use the supplied PNG as is, scaled evenly.</li><li class="do">Sits on the same left margin as the show name, or centred under it.</li><li class="do">Clear space: the height of the logo on every side.</li></ul>
+        <ul><li class="dont">No recolouring, outlines, shadows or redrawing.</li><li class="dont">No stretching, rotating or cropping.</li><li class="dont">Not smaller than 200 px wide at 1920 px.</li></ul>
+      </div>
+    </section>
+  </div>
+  <footer><span>Off Paper - Powered by Tokeniser · Identity sheet · 1 of 2</span><span>Colours, type and logo from the Tokeniser brand resources</span></footer>
+</div>
+
+<div class="page p2">
+  <header>
+    <h1>Graphic devices<span>Paper becoming tokens</span></h1>
+    <div class="tag">Devices 70 percent on solid colour, 60 percent on photos<br>Photos: grayscale plus a 30 percent Slate overlay</div>
+  </header>
+
+  <section style="grid-column:1 / -1">
+    <div class="devices">
+      <div><canvas id="d1" width="600" height="230"></canvas><p><b>Cut sheet.</b> A page outline with the top right corner cut at 45 degrees. Also the shape of the thumbnail photo panel.</p></div>
+      <div><canvas id="d2" width="600" height="230"></canvas><p><b>Ledger lines.</b> Rounded bars that read as a printed page, never as words.</p></div>
+      <div><canvas id="d3" width="600" height="230"></canvas><p><b>Token tiles.</b> Squares on a strict grid. Light Mint while moving, Mint once they lock in.</p></div>
+      <div><canvas id="d4" width="600" height="230"></canvas><p><b>Emblem.</b> 3 x 3 tiles with the top right tile missing, the same corner the sheet is cut at.</p></div>
+    </div>
+  </section>
+
+  <section style="grid-column:1 / -1">
+    <h2>Applications</h2>
+    <div class="apps">
+      <div><img src="previews/cover.jpg"><div class="cap">Cover art, 3000 x 3000</div></div>
+      <div><img src="previews/ep32.jpg"><div class="cap">Thumbnail template: EP number, title, guest name, guest photo</div></div>
+      <div><img src="previews/ep31.jpg"><div class="cap">Same template, new episode: only the four slots change</div></div>
+      <div><img src="previews/ep26.jpg"><div class="cap">Two guests: optional second photo slot</div></div>
+    </div>
+  </section>
+
+  <section style="grid-column:1 / -1">
+    <h2>Opening sequence, 15 seconds, landscape and vertical</h2>
+    <div class="strip">
+      <div><img src="previews/landscape_0.jpg"><div class="cap">0 to 2.5 s: a page draws in</div></div>
+      <div><img src="previews/landscape_1.jpg"><div class="cap">2.7 s: a scan turns lines into tiles</div></div>
+      <div><img src="previews/landscape_2.jpg"><div class="cap">4 to 7 s: tiles leave the page</div></div>
+      <div><img src="previews/landscape_3.jpg"><div class="cap">7 to 9 s: grid links, verified in Mint</div></div>
+      <div><img src="previews/landscape_4.jpg"><div class="cap">9 to 10 s: grid folds into the emblem</div></div>
+      <div><img src="previews/landscape_5.jpg"><div class="cap">10 to 14 s: name and logo, then fade to Slate</div></div>
+      <div><img src="previews/vertical_0.jpg"></div>
+      <div><img src="previews/vertical_1.jpg"></div>
+      <div><img src="previews/vertical_2.jpg"><div class="cap">9:16 layout</div></div>
+    </div>
+    <p style="margin-top:3mm">Motion is calm and exact: ease in and out, no bounce, no shake, one slow push in. Sound is original synthesised music: a D minor pad that resolves to D major as the name lands, with a fine tick for each line and a soft click for each locked row. No voice, no words, and the only on screen text is the show name and the Tokeniser logo.</p>
+  </section>
+  <footer><span>Off Paper - Powered by Tokeniser · Identity sheet · 2 of 2</span><span>Every visual is drawn from one shared file, src/brand.js</span></footer>
+</div>
+
+<script src="brand.js"></script>
+<script>
+(async () => {
+  await loadFonts();
+  const g = id => document.getElementById(id).getContext('2d');
+  let c = g('nameStack');
+  drawName(c, 0, 200, 170, { subScale: 0.3 });
+  c = g('nameInline');
+  drawName(c, 0, 76, 48, { layout: 'inline' });
+  const bg = (ctx) => { ctx.fillStyle = P.slate; ctx.fillRect(0, 0, 600, 230); };
+  // Cut sheet
+  c = g('d1'); bg(c); c.lineWidth = 8; c.strokeStyle = rgba(P.lightMint, DEVICE_ON_SOLID); sheetPath(c, 230, 20, 140, 190, 36); c.stroke();
+  // Ledger lines
+  c = g('d2'); bg(c); drawLedgerLines(c, 180, 30, 240, ledgerRows(7, 4, 0.5), 27, 10, P.lightMint, DEVICE_ON_SOLID);
+  // Tiles
+  c = g('d3'); bg(c);
+  drawTileField(c, 190, 25, 7, 6, 20, 11, P.lightMint, DEVICE_ON_SOLID, (x, y) => x + y < 7);
+  drawTileField(c, 190, 25, 7, 6, 20, 11, P.mint, DEVICE_ON_SOLID, (x, y) => x + y >= 7);
+  // Emblem
+  c = g('d4'); bg(c); drawEmblem(c, 230, 45, 140, P.mint, DEVICE_ON_SOLID);
+  const img = await loadImage('photos/matt-mills.jpg');
+  c = g('ph1'); c.drawImage(img, 0, 140, 675, 405, 0, 0, 500, 300);
+  c = g('ph2'); drawPhoto(c, img, 0, 0, 500, 300, [0.5, 0.38]);
+  c.fillStyle = rgba(P.mint, DEVICE_ON_PHOTO);
+  for (let k = 0; k < 4; k++) c.fillRect(24 + k * 34, 250, 24, 24);
+  document.documentElement.dataset.ready = '1';
+})();
+</script>
+</body></html>
