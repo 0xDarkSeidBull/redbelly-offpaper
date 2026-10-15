@@ -22,8 +22,13 @@
   button.alt { background: transparent; color: var(--mint); border: 2px solid var(--mint); margin-top: 10px; }
   .stage { position: sticky; top: 28px; align-self: start; }
   canvas { width: 100%; height: auto; display: block; border-radius: 6px; }
-  .phone { margin-top: 18px; display: flex; gap: 18px; align-items: flex-start; }
-  .phone canvas { width: 360px; border-radius: 4px; }
+  /* Frame around the output so its edges show against the page, which is also Slate. */
+  .frame { outline: 3px dashed var(--lb); outline-offset: 6px; border-radius: 6px; }
+  .size { display: flex; justify-content: space-between; font-size: 13px; font-weight: 700; color: var(--mint); margin: 0 0 14px; }
+  .size span { color: var(--lb); font-weight: 500; }
+  body.render .frame { outline: none; } body.render .size { display: none; }
+  .phone { margin-top: 30px; display: flex; gap: 18px; align-items: flex-start; }
+  .phone canvas { width: 360px; border-radius: 4px; outline: 2px dashed var(--lb); outline-offset: 4px; }
   .phone span { font-size: 13px; color: var(--lb); line-height: 1.5; }
   #warn { color: var(--mint); font-size: 13px; font-weight: 700; min-height: 18px; margin-top: 8px; }
   body.render .wrap { display: block; padding: 0; } body.render form, body.render .phone { display: none; }
@@ -63,7 +68,8 @@
   <button type="button" class="alt" id="reset">Reset</button>
 </form>
 <div class="stage">
-  <canvas id="c" width="1920" height="1080"></canvas>
+  <div class="size">Output: 1920 x 1080 PNG, 16:9 <span>Dashed line = edge of the thumbnail</span></div>
+  <canvas id="c" class="frame" width="1920" height="1080"></canvas>
   <div class="phone"><canvas id="mini" width="360" height="203"></canvas>
     <span>Phone preview at real size: a thumbnail in a phone feed is about 360 pixels wide. If the title is hard to read here, shorten it.</span></div>
 </div>
@@ -147,8 +153,6 @@ function draw(ctx, d) {
   ctx.fillStyle = P.mint; ctx.font = font(800, 60);
   const epText = 'EP ' + String(d.ep).padStart(2, '0');
   ctx.fillText(epText, M, y + 56);
-  const epW = ctx.measureText(epText).width;
-  ctx.fillStyle = rgba(P.mint, DEVICE_ON_SOLID); ctx.fillRect(M + epW + 28, y + 30, 120, 10);
   y += 64 + 40;
   ctx.fillStyle = P.lightMint; ctx.font = font(800, t.px);
   t.lines.forEach((l, i) => ctx.fillText(l, M - 4, y + t.px * 0.86 + i * lh));

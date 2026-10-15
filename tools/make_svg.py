@@ -58,7 +58,6 @@ svg = f'''<svg xmlns="http://www.w3.org/2000/svg" width="{W}" height="{H}" viewB
 <text id="Show name" x="{M + 80}" y="128" font-family="Montserrat" font-size="34"><tspan font-weight="800" fill="{LM}">Off Paper </tspan><tspan font-weight="500" fill="{MINT}">- Powered by Tokeniser</tspan></text>
 <g id="Episode number">
   <text x="{M}" y="349" font-family="Montserrat" font-weight="800" font-size="60" fill="{MINT}">EP 00</text>
-  <rect x="{M + 200}" y="323" width="120" height="10" fill="{MINT}" fill-opacity="0.7"/>
 </g>
 <g id="Title (max 3 lines, 84 to 112 px)" font-family="Montserrat" font-weight="800" font-size="112" fill="{LM}">
   <text id="Title line 1" x="{M - 4}" y="493">Episode title</text>

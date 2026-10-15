@@ -14,7 +14,6 @@
 <text id="Show name" x="176" y="128" font-family="Montserrat" font-size="34"><tspan font-weight="800" fill="#DAFDE5">Off Paper </tspan><tspan font-weight="500" fill="#A2FFC8">- Powered by Tokeniser</tspan></text>
 <g id="Episode number">
   <text x="96" y="349" font-family="Montserrat" font-weight="800" font-size="60" fill="#A2FFC8">EP 00</text>
-  <rect x="296" y="323" width="120" height="10" fill="#A2FFC8" fill-opacity="0.7"/>
 </g>
 <g id="Title (max 3 lines, 84 to 112 px)" font-family="Montserrat" font-weight="800" font-size="112" fill="#DAFDE5">
   <text id="Title line 1" x="92" y="493">Episode title</text>

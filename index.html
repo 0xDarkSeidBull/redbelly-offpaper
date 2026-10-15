@@ -36,8 +36,23 @@
   h2 { font-size: 30px; margin: 0 0 8px; font-weight: 800; }
   .kicker { font-size: 13px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: var(--mint); margin-bottom: 8px; }
   .sub { color: var(--lb); max-width: 46em; margin: 0 0 28px; font-weight: 500; }
-  .videos { display: grid; grid-template-columns: 1fr 300px; gap: 24px; align-items: start; }
-  video { width: 100%; border-radius: 10px; display: block; background: var(--blue); }
+  /* Both videos share one height, so the 16:9 and 9:16 versions sit side by side in the viewport. */
+  .videos { container-type: inline-size; display: flex; gap: 24px; justify-content: center; align-items: flex-start; }
+  /* Shared height: capped by the screen height and by what fits side by side (16/9 + 9/16 = 2.3403). */
+  .videos > div { flex: none; --vh: min(62vh, 540px, calc((100cqw - 24px) / 2.3403)); }
+  .videos .l { width: calc(var(--vh) * 16 / 9); }
+  .videos .v { width: calc(var(--vh) * 9 / 16); }
+  video { width: 100%; height: auto; border-radius: 10px; display: block; background: var(--blue); }
+  .shot { cursor: zoom-in; border: 0; padding: 0; background: none; display: block; width: 100%; border-radius: 8px; }
+  .shot:focus-visible { outline: 3px solid var(--mint); outline-offset: 3px; }
+  .lb { position: fixed; inset: 0; z-index: 20; background: rgba(52,55,64,.97); display: none; flex-direction: column; align-items: center; justify-content: center; gap: 14px; padding: 16px; }
+  .lb.open { display: flex; }
+  .lb img { max-width: min(100%, 1600px); max-height: calc(100vh - 150px); width: auto; height: auto; border-radius: 8px; outline: 2px solid rgba(201,219,241,.35); }
+  .lb .bar { display: flex; align-items: center; gap: 14px; color: var(--lb); font-weight: 600; font-size: 15px; text-align: center; }
+  .lb button { font: 800 22px Montserrat, sans-serif; width: 52px; height: 52px; border-radius: 50%; border: 2px solid var(--mint); background: var(--slate); color: var(--mint); cursor: pointer; flex: none; }
+  .lb button:hover { background: var(--mint); color: var(--slate); }
+  .lb .x { position: absolute; top: 16px; right: 16px; font-size: 20px; }
+  .lb .count { min-width: 6.5em; }
   .cap { font-size: 13px; color: var(--lb); margin-top: 8px; font-weight: 600; }
   .grid3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
   .grid3 img { width: 100%; border-radius: 8px; display: block; }
@@ -59,11 +74,13 @@
   footer { padding: 34px 0 50px; color: var(--lb); font-size: 14px; border-top: 1px solid rgba(201,219,241,.15); display: flex; justify-content: space-between; gap: 20px; flex-wrap: wrap; }
   footer img { height: 22px; }
   @media (max-width: 900px) {
-    header.hero, .videos, .two { grid-template-columns: 1fr; }
+    header.hero, .two { grid-template-columns: 1fr; }
     .grid3, .dl { grid-template-columns: 1fr; }
     .steps { grid-template-columns: 1fr 1fr; }
     nav .links { display: none; }
-    .videos .v { max-width: 300px; }
+    .videos { flex-direction: column; align-items: center; }
+    .videos .l { width: 100%; max-width: none; }
+    .videos .v { width: min(100%, calc(70vh * 9 / 16)); }
   }
   @media (max-width: 520px) { .steps { grid-template-columns: 1fr; } .wrap { padding: 0 16px; } td:first-child { white-space: normal; } }
 </style>
@@ -92,7 +109,7 @@
     <h2>Opening sequence</h2>
     <p class="sub">15 seconds, landscape and vertical, each laid out for its frame. A page draws in, a scan turns its lines into tiles, the tiles leave the page and lock into a ledger, the grid folds into the emblem, and the name lands. Music and sound only, no words. It ends on solid Slate so an episode can cut straight in.</p>
     <div class="videos">
-      <div><video src="deliverables/04-opening-sequence/off-paper-opening-16x9.mp4" controls playsinline preload="metadata" poster="src/previews/landscape_5.jpg"></video><div class="cap">16:9, 1920 x 1080, 60 fps, AAC stereo</div></div>
+      <div class="l"><video src="deliverables/04-opening-sequence/off-paper-opening-16x9.mp4" controls playsinline preload="metadata" poster="src/previews/landscape_5.jpg"></video><div class="cap">16:9, 1920 x 1080, 60 fps, AAC stereo</div></div>
       <div class="v"><video src="deliverables/04-opening-sequence/off-paper-opening-9x16.mp4" controls playsinline preload="metadata" poster="src/previews/vertical_2.jpg"></video><div class="cap">9:16, 1080 x 1920, 60 fps</div></div>
     </div>
   </section>
@@ -100,11 +117,11 @@
   <section id="thumbnails">
     <div class="kicker">Part B</div>
     <h2>Thumbnail template</h2>
-    <p class="sub">Four slots: episode number, title, guest name and guest photo, plus an optional second guest. Layout, colours, type and logo are locked, so every episode matches. Titles stay three lines or fewer and at least 84 px, which keeps them readable in a phone feed.</p>
+    <p class="sub">Four slots: episode number, title, guest name and guest photo, plus an optional second guest. Layout, colours, type and logo are locked, so every episode matches. Titles stay three lines or fewer and at least 84 px, which keeps them readable in a phone feed. Click a thumbnail to see it full size.</p>
     <div class="grid3">
-      <div><img src="src/previews/ep32.jpg" alt="EP 32 thumbnail, Notes from the research frontline, Vincent Gramoli" loading="lazy" width="960" height="540"><div class="cap">EP 32, stand-in from Redbelly Insights 32</div></div>
-      <div><img src="src/previews/ep31.jpg" alt="EP 31 thumbnail, What's new at Tokeniser, Matt Mills" loading="lazy" width="960" height="540"><div class="cap">EP 31, stand-in from Redbelly Insights 31</div></div>
-      <div><img src="src/previews/ep26.jpg" alt="EP 26 thumbnail, Redbelly and Tokeniser in conversation, two guests" loading="lazy" width="960" height="540"><div class="cap">EP 26, two guest layout</div></div>
+      <div><button class="shot" type="button" data-full="deliverables/03-thumbnails/examples/off-paper-ep32-thumbnail.png" aria-label="Open EP 32 thumbnail, Notes from the research frontline, Vincent Gramoli full size"><img src="src/previews/ep32.jpg" alt="EP 32 thumbnail, Notes from the research frontline, Vincent Gramoli" loading="lazy" width="960" height="540"></button><div class="cap">EP 32, stand-in from Redbelly Insights 32</div></div>
+      <div><button class="shot" type="button" data-full="deliverables/03-thumbnails/examples/off-paper-ep31-thumbnail.png" aria-label="Open EP 31 thumbnail, What's new at Tokeniser, Matt Mills full size"><img src="src/previews/ep31.jpg" alt="EP 31 thumbnail, What's new at Tokeniser, Matt Mills" loading="lazy" width="960" height="540"></button><div class="cap">EP 31, stand-in from Redbelly Insights 31</div></div>
+      <div><button class="shot" type="button" data-full="deliverables/03-thumbnails/examples/off-paper-ep26-thumbnail.png" aria-label="Open EP 26 thumbnail, Redbelly and Tokeniser in conversation, two guests full size"><img src="src/previews/ep26.jpg" alt="EP 26 thumbnail, Redbelly and Tokeniser in conversation, two guests" loading="lazy" width="960" height="540"></button><div class="cap">EP 26, two guest layout</div></div>
     </div>
     <div class="steps">
       <div class="step"><b>Open the maker</b>Any browser, free, nothing to install: <a href="src/thumbnail.html">thumbnail maker</a>.</div>
@@ -153,4 +170,49 @@
     <img src="src/brand/tokeniser-logo-on-dark.png" alt="Tokeniser" style="height:auto;width:150px;margin:-14px 0">
   </footer>
 </div>
+
+<div class="lb" id="lb" role="dialog" aria-modal="true" aria-label="Thumbnail viewer">
+  <button class="x" type="button" id="lbClose" aria-label="Close">&#10005;</button>
+  <img id="lbImg" alt="">
+  <div class="bar">
+    <button type="button" id="lbPrev" aria-label="Previous thumbnail">&#8592;</button>
+    <span class="count" id="lbCount"></span>
+    <button type="button" id="lbNext" aria-label="Next thumbnail">&#8594;</button>
+  </div>
+</div>
+<script>
+// Thumbnail viewer: click to open full size, arrows or swipe to move, Esc to close.
+(() => {
+  const shots = [...document.querySelectorAll('.shot')];
+  const lb = document.getElementById('lb'), img = document.getElementById('lbImg'), count = document.getElementById('lbCount');
+  let i = 0, last = null;
+  const show = n => {
+    i = (n + shots.length) % shots.length;
+    const s = shots[i], small = s.querySelector('img');
+    img.src = small.src; img.alt = small.alt;
+    const full = new Image(); full.onload = () => { if (shots[i] === s) img.src = full.src; }; full.src = s.dataset.full;
+    count.textContent = (i + 1) + ' of ' + shots.length;
+  };
+  const open = n => { last = document.activeElement; show(n); lb.classList.add('open'); document.body.style.overflow = 'hidden'; document.getElementById('lbNext').focus(); };
+  const close = () => { lb.classList.remove('open'); document.body.style.overflow = ''; if (last) last.focus(); };
+  shots.forEach((s, n) => s.addEventListener('click', () => open(n)));
+  document.getElementById('lbPrev').onclick = () => show(i - 1);
+  document.getElementById('lbNext').onclick = () => show(i + 1);
+  document.getElementById('lbClose').onclick = close;
+  lb.addEventListener('click', e => { if (e.target === lb) close(); });
+  document.addEventListener('keydown', e => {
+    if (!lb.classList.contains('open')) return;
+    if (e.key === 'Escape') close();
+    if (e.key === 'ArrowLeft') show(i - 1);
+    if (e.key === 'ArrowRight') show(i + 1);
+  });
+  let x0 = null;
+  lb.addEventListener('touchstart', e => { x0 = e.touches[0].clientX; }, { passive: true });
+  lb.addEventListener('touchend', e => {
+    if (x0 === null) return;
+    const dx = e.changedTouches[0].clientX - x0; x0 = null;
+    if (Math.abs(dx) > 50) show(i + (dx < 0 ? 1 : -1));
+  });
+})();
+</script>
 </body></html>
