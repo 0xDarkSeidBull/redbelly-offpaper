@@ -85,3 +85,10 @@ To change the opening, edit `src/opening.html`. Open it in a browser to watch it
 ## Hosting
 
 The repository is a static site. Serve the folder with any web server, such as Caddy or nginx, and open `index.html`. No build step is needed to view it.
+
+Do not let the server hand out `.git` or the ignored files. A clone's `.git` folder holds local logs that name the machine and user that ran git there. With Caddy, block them before `file_server`:
+
+```
+@hidden path /.git /.git/* /.gitignore /.credit-names
+respond @hidden 404
+```
